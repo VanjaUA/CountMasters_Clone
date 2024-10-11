@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,6 +12,24 @@ public class EnemyCenter : MonoBehaviour
     private List<EnemyUnit> unitsList = new List<EnemyUnit>();
     [Range(0f, 1f)] [SerializeField] private float distanceFactor, radius;
     [SerializeField] private TextMeshPro countText;
+
+    private PlayerLogic player;
+
+
+    private void Update()
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        Vector3 movePoint = player.transform.position;
+        for (int i = 0; i < unitsList.Count; i++)
+        {
+            unitsList[i].transform.position = Vector3.Lerp(unitsList[i].transform.position, movePoint, Time.deltaTime);
+
+        }
+    }
 
     private void Awake()
     {
@@ -42,6 +61,7 @@ public class EnemyCenter : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             EnemyUnit newUnit = Instantiate(unitPrefab, unitsStorage).GetComponent<EnemyUnit>();
+            newUnit.transform.localRotation = Quaternion.Euler(0,180f,0);
             unitsList.Add(newUnit);
             newUnit.OnDieEvent += NewUnit_OnDieEvent; ;
         }
@@ -52,7 +72,11 @@ public class EnemyCenter : MonoBehaviour
     private void NewUnit_OnDieEvent(object sender, System.EventArgs e)
     {
         unitsList.Remove((EnemyUnit)sender);
-        FormatUnits(false);
+        if (unitsList.Count == 0)
+        {
+            Destroy(this.gameObject);
+        }
+        UpdateCountText();
     }
 
     private void UpdateCountText()
@@ -71,5 +95,24 @@ public class EnemyCenter : MonoBehaviour
         float radiusCubed = volume / ((4f / 3f) * 3.14f);
         float radius = Mathf.Pow(radiusCubed, 1f / 3f);
         GetComponent<SphereCollider>().radius = radius + unitsList.Count / 100;
+    }
+
+    public void Attack(PlayerLogic player) 
+    {
+        this.player = player;
+    }
+
+    public int GetUnitsCount() 
+    {
+        return unitsList.Count;
+    }
+
+    public EnemyUnit GetFirstEnemyUnit() 
+    {
+        if (unitsList.Count == 0)
+        {
+            return null;
+        }
+        return unitsList[unitsList.Count - 1];
     }
 }

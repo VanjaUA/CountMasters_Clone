@@ -9,11 +9,15 @@ public class UnitLogic : MonoBehaviour
 
     public Vector3 Destination { get; set; }
 
-    private const float MIN_DISTANCE = 0.1f;
+    private const float MIN_DISTANCE = 0.2f;
 
     public event EventHandler OnDieEvent;
 
-    public event EventHandler OnCombatEvent;
+    public event EventHandler<OnCombat_EventArgs> OnCombatEvent;
+    public class OnCombat_EventArgs
+    {
+        public EnemyCenter enemyCenter;
+    }
 
     public event EventHandler<OnGateTrigger_EventArgs> OnGateTriggerEvent;
     public class OnGateTrigger_EventArgs
@@ -39,7 +43,7 @@ public class UnitLogic : MonoBehaviour
         EnemyUnit enemyUnit;
         if (collision.gameObject.TryGetComponent<EnemyUnit>(out enemyUnit))
         {
-            OnCombatEvent?.Invoke(this,EventArgs.Empty);
+            OnCombatEvent?.Invoke(this, new OnCombat_EventArgs() {enemyCenter = enemyUnit.GetComponentInParent<EnemyCenter>()});
             enemyUnit.Kill();
             Kill();
         }
@@ -56,6 +60,7 @@ public class UnitLogic : MonoBehaviour
 
     private IEnumerator CheckIfAliveCoroutine() 
     {
+        CapsuleCollider collider = GetComponent<CapsuleCollider>();
         while (true)
         {
             if (Physics.Raycast(transform.position, Vector3.down, 2f) == false)
