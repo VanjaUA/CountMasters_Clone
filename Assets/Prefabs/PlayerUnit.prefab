@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 1337997659611951943}
   - component: {fileID: 5692929910623323102}
   - component: {fileID: 9218559048715793997}
-  m_Layer: 6
-  m_Name: Unit
+  m_Layer: 0
+  m_Name: PlayerUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e471ce70a88f704383b922661f79aab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 3
 --- !u!1001 &7966749601964920513
 PrefabInstance:
   m_ObjectHideFlags: 0

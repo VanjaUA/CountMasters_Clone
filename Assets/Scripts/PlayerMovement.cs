@@ -11,27 +11,27 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float cameraSensitivity;
 
 
-    private PlayerLogic playerLogic;
+    private PlayerCenter playerLogic;
     private bool combat = false;
 
     private void Start()
     {
         InputManager.Instance.OnTouchEvent += InputManager_OnTouchEvent;
 
-        if (TryGetComponent<PlayerLogic>(out playerLogic))
+        if (TryGetComponent<PlayerCenter>(out playerLogic))
         {
             playerLogic.OnStateChangedEvent += PlayerLogic_OnStateChangedEvent;
         }
     }
 
-    private void PlayerLogic_OnStateChangedEvent(object sender, PlayerLogic.OnStateChanged_EventArgs e)
+    private void PlayerLogic_OnStateChangedEvent(object sender, PlayerCenter.OnStateChanged_EventArgs e)
     {
         switch (e.state)
         {
-            case PlayerLogic.State.Moving:
+            case PlayerCenter.State.Moving:
                 combat = false;
                 break;
-            case PlayerLogic.State.Combat:
+            case PlayerCenter.State.Combat:
                 combat = true;
                 break;
             default:

@@ -388,6 +388,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gateType: 0
   gateValue: 20
+  transparentBox: {fileID: 2919441662029771908}
 --- !u!65 &1492834130033967676
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4180822582460312124}
   - component: {fileID: 4458197962955300582}
   - component: {fileID: 3607795584401349213}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: EnemyUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 272d3bc4012e1d045909c5509f13019f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 3
 --- !u!1001 &5513059723733674908
 PrefabInstance:
   m_ObjectHideFlags: 0

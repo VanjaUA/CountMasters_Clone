@@ -308,10 +308,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235f2aa8b7cdc9940a84c1f46175f6af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startCount: 1
+  unitsStorage: {fileID: 4200437929279497622}
   unitPrefab: {fileID: 6816472392163196739, guid: a08b748474a5ac44fba01c0be8936b33, type: 3}
   distanceFactor: 0.35
   radius: 1
-  unitsStorage: {fileID: 4200437929279497622}
   countText: {fileID: 6703504899801511166}
 --- !u!1 &7071420501213734373
 GameObject:
