@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System.Linq;
 
 public class EnemyCenter : MonoBehaviour
 {
@@ -10,8 +11,11 @@ public class EnemyCenter : MonoBehaviour
     [SerializeField] private Transform unitsStorage;
     [SerializeField] private GameObject unitPrefab;
     private List<EnemyUnit> unitsList = new List<EnemyUnit>();
+    private List<EnemyUnit> sortedUnits;
     [Range(0f, 1f)] [SerializeField] private float distanceFactor, radius;
     [SerializeField] private TextMeshPro countText;
+
+    public float Radius { get; set; }
 
     private PlayerLogic player;
 
@@ -23,11 +27,14 @@ public class EnemyCenter : MonoBehaviour
             return;
         }
 
-        Vector3 movePoint = player.transform.position;
         for (int i = 0; i < unitsList.Count; i++)
         {
-            unitsList[i].transform.position = Vector3.Lerp(unitsList[i].transform.position, movePoint, Time.deltaTime);
+            float xDelta = player.transform.position.x - transform.position.x;
+            float newXPosition = (transform.localPosition.x / Radius) * player.Radius + xDelta;
+            float newZPosition = player.transform.position.z - transform.position.z;
+            Vector3 newPosition = new Vector3(newXPosition, transform.localPosition.y, newZPosition);
 
+            unitsList[i].Destination = newPosition;
         }
     }
 
@@ -54,6 +61,8 @@ public class EnemyCenter : MonoBehaviour
 
         UpdateCountText();
         ChangeColliderRadius();
+
+        sortedUnits = unitsList.OrderBy(x => x.transform.position.z).ToList();
     }
 
     public void SpawnUnits(int count)
@@ -86,6 +95,7 @@ public class EnemyCenter : MonoBehaviour
 
     private void ChangeColliderRadius()
     {
+        float radiusModifier = 1.1f;
         float volume = unitsList.Count;
         if (volume == 0)
         {
@@ -94,7 +104,8 @@ public class EnemyCenter : MonoBehaviour
         }
         float radiusCubed = volume / ((4f / 3f) * 3.14f);
         float radius = Mathf.Pow(radiusCubed, 1f / 3f);
-        GetComponent<SphereCollider>().radius = radius + unitsList.Count / 100;
+        Radius = radius * radiusModifier;
+        GetComponent<SphereCollider>().radius = Radius;
     }
 
     public void Attack(PlayerLogic player) 
@@ -114,5 +125,17 @@ public class EnemyCenter : MonoBehaviour
             return null;
         }
         return unitsList[unitsList.Count - 1];
+    }
+
+    public EnemyUnit RemoveFirstUnit() 
+    {
+        if (sortedUnits.Count < 1)
+        {
+            return null;
+        }
+        EnemyUnit unitToRemove = sortedUnits[0];
+        sortedUnits.RemoveAt(0);
+        unitToRemove.Kill();
+        return unitToRemove;
     }
 }

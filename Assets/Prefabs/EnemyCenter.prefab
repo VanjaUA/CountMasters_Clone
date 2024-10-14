@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 6916734905540020418}
   - component: {fileID: 1051443403131783350}
   - component: {fileID: -6796340868273778267}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: EnemyCenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 1, z: 0}

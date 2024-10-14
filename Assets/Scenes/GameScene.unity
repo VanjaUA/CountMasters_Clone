@@ -132,7 +132,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5376770791972141676, guid: 39e467606c1a80e4187bd4a64ffc3411, type: 3}
       propertyPath: gateValue
-      value: 100
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 6847105492448022525, guid: 39e467606c1a80e4187bd4a64ffc3411, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1618,7 +1618,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6916734905540020418, guid: 1df1ad0def1d7ea42bded71adc6611fa, type: 3}
       propertyPath: startCount
-      value: 50
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7964639658041347129, guid: 1df1ad0def1d7ea42bded71adc6611fa, type: 3}
       propertyPath: m_Name
@@ -1640,10 +1640,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4029014075520528, guid: 37ab89f7c3f3e2e43909d7754bc05c4d, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1580881061372228575, guid: 37ab89f7c3f3e2e43909d7754bc05c4d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1692,10 +1688,6 @@ PrefabInstance:
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 917380284}
-    - target: {fileID: 6898614098973293337, guid: 37ab89f7c3f3e2e43909d7754bc05c4d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

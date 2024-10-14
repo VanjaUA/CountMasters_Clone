@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using System.Linq;
 
 public class PlayerLogic : MonoBehaviour
 {
@@ -16,6 +17,11 @@ public class PlayerLogic : MonoBehaviour
 
     [SerializeField] private GameObject unitPrefab;
     private List<UnitLogic> unitsList = new List<UnitLogic>();
+    private List<UnitLogic> sortedUnits;
+
+    private float fightTime = 0.05f;
+    private float maxFightTimeModifier = 1.5f, fightTimeModifier = 1f;
+    private float fightTimer;
 
     [Range(0f, 1f)] [SerializeField] private float distanceFactor, radius;
 
@@ -34,6 +40,8 @@ public class PlayerLogic : MonoBehaviour
         }
     }
 
+    public float Radius { get; set; }
+
     public event EventHandler<OnStateChanged_EventArgs> OnStateChangedEvent;
 
     public class OnStateChanged_EventArgs : EventArgs
@@ -45,33 +53,47 @@ public class PlayerLogic : MonoBehaviour
 
     private void Awake()
     {
-
         for (int i = 0; i < unitsStorage.childCount; i++)
         {
             unitsList.Add(unitsStorage.GetChild(i).GetComponent<UnitLogic>());
             unitsList[i].OnDieEvent += NewUnit_OnDieEvent;
             unitsList[i].OnGateTriggerEvent += NewUnit_OnGateTriggerEvent;
-            unitsList[i].OnCombatEvent += PlayerLogic_OnCombatEvent; ;
         }
         FormatUnits(true);
     }
 
     private void Update()
     {
+
         if (PlayerState == State.Combat)
         {
             if (currentEnemy == null || currentEnemy.GetUnitsCount() <= 0)
             {
                 PlayerState = State.Moving;
+                fightTimeModifier = 1f;
                 FormatUnits(false);
                 return;
             }
 
-            Vector3 movePoint = currentEnemy.transform.position;
+            fightTimeModifier = Mathf.Lerp(fightTimeModifier, maxFightTimeModifier, Time.deltaTime);
+            fightTimer += Time.deltaTime * fightTimeModifier;
+            if (fightTimer >= fightTime)
+            {
+                fightTimer -= fightTime;
+                sortedUnits[0].Kill();
+                sortedUnits.RemoveAt(0);
+
+                currentEnemy.RemoveFirstUnit();
+            }
+
             for (int i = 0; i < unitsList.Count; i++)
             {
-                unitsList[i].transform.position = Vector3.Lerp(unitsList[i].transform.position, movePoint, Time.deltaTime);
-                //unitsList[i].Destination = currentEnemy.transform.position - unitsList[i].transform.position;
+                float xDelta = currentEnemy.transform.position.x - transform.position.x;
+                float newXPosition = (transform.localPosition.x / Radius) * currentEnemy.Radius + xDelta * 2;
+                float newZPosition = currentEnemy.transform.position.z - transform.position.z;
+                Vector3 newPosition = new Vector3(newXPosition,transform.localPosition.y,newZPosition);
+
+                unitsList[i].Destination = newPosition;
             }
 
         }
@@ -79,20 +101,12 @@ public class PlayerLogic : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        EnemyCenter enemyCenter;
-        if (other.TryGetComponent<EnemyCenter>(out enemyCenter))
+        if (other.TryGetComponent<EnemyCenter>(out currentEnemy))
         {
             Debug.Log("trigger");
+            PlayerState = State.Combat;
+            currentEnemy.Attack(this);
         }
-    }
-    private void PlayerLogic_OnCombatEvent(object sender, UnitLogic.OnCombat_EventArgs e)
-    {
-        PlayerState = State.Combat;
-        if (e.enemyCenter != null && e.enemyCenter != currentEnemy)
-        {
-            currentEnemy = e.enemyCenter;
-        }
-        currentEnemy.Attack(this);
     }
 
     public void SpawnUnits(int count) 
@@ -105,7 +119,6 @@ public class PlayerLogic : MonoBehaviour
             unitsList.Add(newUnit);
             newUnit.OnDieEvent += NewUnit_OnDieEvent;
             newUnit.OnGateTriggerEvent += NewUnit_OnGateTriggerEvent;
-            newUnit.OnCombatEvent += PlayerLogic_OnCombatEvent;
         }
 
         FormatUnits(true,unitsList.Count - count);
@@ -148,10 +161,20 @@ public class PlayerLogic : MonoBehaviour
         FormatUnits(false);
     }
 
-    public void FormatUnits(bool setPositionImmediately, int startIndex = 1)
+    public void FormatUnits(bool setPositionImmediately, int startIndex = 0)
     {
         for (int i = startIndex; i < unitsList.Count; i++)
         {
+            if (i == 0)
+            {
+                unitsList[i].Destination = Vector3.zero;
+                if (setPositionImmediately)
+                {
+                    unitsList[i].transform.localPosition = Vector3.zero;
+                }
+
+                continue;
+            }
             var x = distanceFactor * Mathf.Sqrt(i + 2) * Mathf.Cos(i * radius);
             var z = distanceFactor * Mathf.Sqrt(i + 2) * Mathf.Sin(i * radius);
 
@@ -166,6 +189,8 @@ public class PlayerLogic : MonoBehaviour
 
         UpdateCountText();
         ChangeColliderRadius();
+
+        sortedUnits = unitsList.OrderByDescending(x => x.transform.position.z).ToList();
     }
 
     private void UpdateCountText() 
@@ -175,6 +200,7 @@ public class PlayerLogic : MonoBehaviour
 
     private void ChangeColliderRadius() 
     {
+        float radiusModifier = 1.1f;
         float volume = unitsList.Count;
         if (volume == 0)
         {
@@ -183,7 +209,8 @@ public class PlayerLogic : MonoBehaviour
         }
         float radiusCubed = volume / ((4f / 3f) * 3.14f);
         float radius = Mathf.Pow(radiusCubed, 1f / 3f);
-        GetComponent<SphereCollider>().radius = radius + unitsList.Count/100;
+        Radius = radius * radiusModifier;
+        GetComponent<SphereCollider>().radius = Radius;
     }
 
     public UnitLogic GetFirstUnit()

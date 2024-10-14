@@ -38,16 +38,16 @@ public class UnitLogic : MonoBehaviour
         MoveUnit();
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        EnemyUnit enemyUnit;
-        if (collision.gameObject.TryGetComponent<EnemyUnit>(out enemyUnit))
-        {
-            OnCombatEvent?.Invoke(this, new OnCombat_EventArgs() {enemyCenter = enemyUnit.GetComponentInParent<EnemyCenter>()});
-            enemyUnit.Kill();
-            Kill();
-        }
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    EnemyUnit enemyUnit;
+    //    if (collision.gameObject.TryGetComponent<EnemyUnit>(out enemyUnit))
+    //    {
+    //        OnCombatEvent?.Invoke(this, new OnCombat_EventArgs() { enemyCenter = enemyUnit.GetComponentInParent<EnemyCenter>() });
+    //        enemyUnit.Kill();
+    //        Kill();
+    //    }
+    //}
 
     private void MoveUnit() 
     {
@@ -60,7 +60,6 @@ public class UnitLogic : MonoBehaviour
 
     private IEnumerator CheckIfAliveCoroutine() 
     {
-        CapsuleCollider collider = GetComponent<CapsuleCollider>();
         while (true)
         {
             if (Physics.Raycast(transform.position, Vector3.down, 2f) == false)
